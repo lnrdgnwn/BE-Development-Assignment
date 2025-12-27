@@ -14,7 +14,7 @@ import (
 // @Security BearerAuth
 // @Produce json
 // @Success 200 {object} models.User
-// @Router /users/me [get]
+// @Router /api/users/me [get]
 func GetMyProfile(c *fiber.Ctx) error {
 	userID := c.Locals("user_id").(uint)
 
@@ -37,7 +37,7 @@ func GetMyProfile(c *fiber.Ctx) error {
 // @Security BearerAuth
 // @Produce json
 // @Success 200 {array} models.User
-// @Router /users [get]
+// @Router /api/users [get]
 func GetUsers(c *fiber.Ctx) error {
 	var users []models.User
 

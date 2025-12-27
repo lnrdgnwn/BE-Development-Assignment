@@ -19,7 +19,7 @@ import (
 // @Produce json
 // @Param body body object{event_id=int,quantity=int} true "Transaction payload"
 // @Success 201 {object} models.Transaction
-// @Router /transactions [post]
+// @Router /api/transactions [post]
 func CreateTransaction(c *fiber.Ctx) error {
 	var body struct {
 		EventID  uint `json:"event_id"`
@@ -84,6 +84,15 @@ func CreateTransaction(c *fiber.Ctx) error {
 		})
 	}
 
+	if err := database.DB.
+	Preload("Event").
+		First(&trx, trx.ID).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to load transaction detail",
+		})
+	}
+
+
 	return c.Status(fiber.StatusCreated).JSON(trx)
 }
 
@@ -95,7 +104,7 @@ func CreateTransaction(c *fiber.Ctx) error {
 // @Security BearerAuth
 // @Produce json
 // @Success 200 {array} models.Transaction
-// @Router /transactions [get]
+// @Router /api/transactions [get]
 func GetMyTransactions(c *fiber.Ctx) error {
 	userID := c.Locals("user_id").(uint)
 

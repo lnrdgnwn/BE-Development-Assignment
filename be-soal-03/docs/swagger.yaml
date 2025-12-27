@@ -16,8 +16,6 @@ definitions:
         type: string
       organizer:
         $ref: '#/definitions/models.User'
-      organizer_id:
-        type: integer
       status:
         type: string
       title:
@@ -126,8 +124,6 @@ paths:
       responses:
         "201":
           description: Created
-          schema:
-            $ref: '#/definitions/models.User'
       summary: Register new user
       tags:
       - Auth

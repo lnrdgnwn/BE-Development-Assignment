@@ -14,12 +14,13 @@ import (
 // @Tags Events
 // @Produce json
 // @Success 200 {array} models.Event
-// @Router /events [get]
+// @Router /api/events [get]
 func GetEvents(c *fiber.Ctx) error {
 	var events []models.Event
 
 	if err := database.DB.
 		Where("status = ?", "PUBLISHED").
+		Preload("Organizer").
 		Find(&events).Error; err != nil {
 
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -36,13 +37,14 @@ func GetEvents(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "Event ID"
 // @Success 200 {object} models.Event
-// @Router /events/{id} [get]
+// @Router /api/events/{id} [get]
 func GetEventByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	var event models.Event
 	if err := database.DB.
 		Where("id = ? AND status = ?", id, "PUBLISHED").
+		Preload("Organizer").
 		First(&event).Error; err != nil {
 
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
@@ -63,7 +65,7 @@ func GetEventByID(c *fiber.Ctx) error {
 // @Produce json
 // @Param body body object{title=string,description=string,event_date=string,location=string,total_ticket=int} true "Event payload"
 // @Success 201 {object} models.Event
-// @Router /events [post]
+// @Router /api/events [post]
 func CreateEvent(c *fiber.Ctx) error {
 	var body struct {
 		Title       string    `json:"title"`
@@ -100,11 +102,13 @@ func CreateEvent(c *fiber.Ctx) error {
 		UpdatedAt:       time.Now(),
 	}
 
-	if err := database.DB.Create(&event).Error; err != nil {
+	if err := database.DB.
+		Preload("Organizer").
+		First(&event, event.ID).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to create event",
-		})
-	}
+			"error": "Failed to load organizer",
+	})
+}
 
 	return c.Status(fiber.StatusCreated).JSON(event)
 }
@@ -119,7 +123,7 @@ func CreateEvent(c *fiber.Ctx) error {
 // @Param id path int true "Event ID"
 // @Param body body object{title=string,description=string,event_date=string,location=string,status=string,total_ticket=int} true "Update event payload"
 // @Success 200 {object} models.Event
-// @Router /events/{id} [put]
+// @Router /api/events/{id} [put]
 func UpdateEvent(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -176,11 +180,13 @@ func UpdateEvent(c *fiber.Ctx) error {
 
 	event.UpdatedAt = time.Now()
 
-	if err := database.DB.Save(&event).Error; err != nil {
+	if err := database.DB.
+		Preload("Organizer").
+		First(&event, event.ID).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to update event",
-		})
-	}
+			"error": "Failed to load organizer",
+	})
+}
 
 	return c.JSON(event)
 }

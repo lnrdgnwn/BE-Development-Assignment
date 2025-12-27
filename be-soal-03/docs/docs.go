@@ -102,10 +102,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.User"
-                        }
+                        "description": "Created"
                     }
                 }
             }
@@ -428,9 +425,6 @@ const docTemplate = `{
                 },
                 "organizer": {
                     "$ref": "#/definitions/models.User"
-                },
-                "organizer_id": {
-                    "type": "integer"
                 },
                 "status": {
                     "type": "string"

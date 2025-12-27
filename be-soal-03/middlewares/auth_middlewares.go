@@ -21,7 +21,14 @@ func AuthMiddleware(c *fiber.Ctx) error {
 		return c.Status(401).JSON(fiber.Map{"message": "Invalid token"})
 	}
 
-	c.Locals("user_id", claims["user_id"])
+	userIDFloat, ok := claims["user_id"].(float64)
+	if !ok {
+		return c.Status(401).JSON(fiber.Map{"message": "Invalid token payload"})
+	}
+
+	userID := uint(userIDFloat)
+
+	c.Locals("user_id", userID)
 	c.Locals("role", claims["role"])
 
 	return c.Next()

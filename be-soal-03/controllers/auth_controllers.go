@@ -16,8 +16,8 @@ import (
 // @Accept json
 // @Produce json
 // @Param body body object{name=string,email=string,password=string} true "Register payload"
-// @Success 201 {object} models.User
-// @Router /auth/register [post]
+// @Success 201
+// @Router /api/auth/register [post]
 func Register(c *fiber.Ctx) error {
 	var body struct {
 		Name     string `json:"name"`
@@ -68,7 +68,7 @@ func Register(c *fiber.Ctx) error {
 // @Produce json
 // @Param body body object{email=string,password=string} true "Login payload"
 // @Success 200 {object} object{token=string}
-// @Router /auth/login [post]
+// @Router /api/auth/login [post]
 func Login(c *fiber.Ctx) error {
 	var body struct {
 		Email    string `json:"email"`
